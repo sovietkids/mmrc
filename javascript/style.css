@@ -1,0 +1,56 @@
+body {
+    background-color: #ffffff;
+    text-align: center;
+    color: #ff9ffa;
+}
+
+div {
+    margin: 0.5%;
+    border: solid 3px;
+    border-color: #ff9ffa;
+}
+
+img {
+    width: 30%;
+}
+
+input {
+    border: none;
+    outline: none;
+    background: #ff93fa;
+    border-radius:10px;
+}
+
+button {
+    border-color: #f5bfbf;
+    border-radius: 20px;
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    color: #ff93fa;
+    transition: 0.5s;
+}
+
+button:hover {
+    color: #ff76f8;
+    transition: 0.5s;
+}
+
+audio {
+    width: 60%;
+}
+
+video {
+    width: 60%;
+}
+
+textarea {
+    border: none;
+    outline: none;
+    background: #ff93fa;
+    border-radius:10px;
+}
+
+audio {
+    color: #ff93fa;
+}
