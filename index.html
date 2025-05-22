@@ -1,29 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animation.css">
+    <link rel="stylesheet" href="css/popup.css">
+    <link rel="icon" href="img/ico.ico">
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="rofv7VxOZ4aDtsb_3wpgXaS9I2G7fulJ6sDtd1e35Ww" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>まんまるコミュニティ</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/animation.css">
-    <link rel="stylesheet" href="css/popup.css">
-    <link rel="icon" href="img/AMT_flag.ico">
 </head>
 <body>
     <dialog>
      <form method="dialog">
         <div id="popup">
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/VGC8S19hvg4?si=PVJsP_uAkMqqsal4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-          <p></p>
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/F_Gbm7rT-WM?si=zkf4r-1IO3BpaFXK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>          <p></p>
           <button>閉じる</button>
         </div>
      <form>
 
     </dialog>
-    <h3>パスワードを入力して下さい</h3>
-    <input type="text" id="password" name="password" placeholder="">
-    <button onclick="passwordconfirmation()">確認</button>
-    <script src="javascript/index.js"></script>
+    <h1>まんまるコミュニティ</h1>
+    <div>
+        <h3>今は春なので桜ですね！</h3>
+        <p>まんまるコミュニティ<p>
+        <p style="color: brown;">ページを見る場合はChromeブラウザを推奨します</p>
+        <img style="width:70%;" src="img/まんまるコミュニティ.png" alt="">
+    </div>
+    <div>
+        <h3 style="color: brown;">画像</h3>
+        <p style="color: brown;">ダウンロードのやり方</p>
+        <p>マウスの右側を押しますor指で長押し</p>
+        <p>[名前をつけて画像を保存]又は[写真に保存]を押します</p>
+        <h5>まつざかティーチャー</h5>
+        <img src="img/matsu.png" alt="">
+        <h5>まんまる2</h5>
+        <img src="img/manmaru2.png" alt="">
+    </div>
+    <div>
+        <h3>曲</h3>
+        <p>Anti MATSUZAKA Team</p>
+        <audio controls src="img/Anti_MATSUZAKA_Team.mp3">Anti MATSUZAKA Team</audio>
+        <p>MATU&U</p>
+        <audio controls src="img/MATU&U.mp3"></audio>
+        <p>Unititled</p>
+        <audio controls src="img/Untitled.mp3"></audio>
+        <p>木村混ぜ混ぜラップ</p>
+        <audio controls src="img/kimuramazemaze.mp3"></audio>
+    </div>
+    <div>
+        <h3>まんまる情報</h3>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/F_Gbm7rT-WM?si=Z7w7sUSj92M20eut" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/VGC8S19hvg4?si=g2sXHWUNnCHmi7N8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/R_lA5AW8TG4?si=18iyVrAu2xtGoYyG" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div>
+        <h3>リンク</h3>
+        <button style="margin: 0.5%;" onclick="location.href='https://www.youtube.com/@manmaruc'"><img src="img/channels4_profile.jpg" alt=""></button>
+    </div>
+    <div>
+    <h3>実験的機能</h3>
+    <div>
+        <h3>コミュニティ</h3>
+        <p style="color: brown;">App StoreなどでDiscordをインストールして下さい</p>
+        <button style="margin: 0.5%;" onclick="location.href='https://discord.com/invite/nWDF8prj'">掲示板に参加する</button>
+    </div>
+    <div>
+        <h3>デバックメニュー</h3>
+        <button style="margin: 0.5%;" onclick='localStorage.setItem("passwordunlocked", "false"); console.log("passwordunlocked:false")'>passwordunlockedをfalseにする</button>
+    </div>
+    </div>
+    
+  <script src="javascript/index.js"></script>
 </body>
 </html>
