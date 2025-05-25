@@ -1,56 +1,28 @@
 body {
-    background-color: #ffffff;
-    text-align: center;
-    color: #ff9ffa;
+    background-color: rgb(14, 14, 14);
+    color: white;
 }
 
-div {
-    margin: 0.5%;
-    border: solid 3px;
-    border-color: #ff9ffa;
+.main {
+    background: linear-gradient(90deg, #58c6ff 0%, #076ad9 40%, #ff3bef 80%);
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+}
+
+.title {
+    text-align: center;
+}
+
+.part {
+    padding-bottom: 20px;
+    padding-left: 25%;
 }
 
 img {
-    width: 30%;
+    width: 15%;
 }
 
-input {
-    border: none;
-    outline: none;
-    background: #ff93fa;
-    border-radius:10px;
-}
-
-button {
-    border-color: #f5bfbf;
-    border-radius: 20px;
-    background: transparent;
-    outline: none;
-    box-shadow: none;
-    color: #ff93fa;
-    transition: 0.5s;
-}
-
-button:hover {
-    color: #ff76f8;
-    transition: 0.5s;
-}
-
-audio {
-    width: 60%;
-}
-
-video {
-    width: 60%;
-}
-
-textarea {
-    border: none;
-    outline: none;
-    background: #ff93fa;
-    border-radius:10px;
-}
-
-audio {
-    color: #ff93fa;
+table {
+    text-align: left;
 }
