@@ -1,1 +1,0 @@
-location.href="https://mmrc.vercel.app/senryou.html"
