@@ -1,10 +1,20 @@
 <html>
     <head>
+        <title>mmrc.vercel.app</title>
         <link rel="icon" href="MCAqua.ico">
         <meta charset="UTF-8">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+        <!-- External Libraries for Ultimate Flashiness -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
         <style>
             :root {
                 --primary-color: #00ffff;
@@ -18,18 +28,28 @@
 
             body {
                 margin: 0;
-                background-color: var(--background-color);
-                background-image: 
-                    linear-gradient(var(--border-color) 1px, transparent 1px),
-                    linear-gradient(to right, var(--border-color) 1px, var(--background-color) 1px);
+                background-color: var(--background-color); /* Fallback */
                 background-size: 40px 40px;
                 color: var(--text-color);
                 font-family: 'Orbitron', sans-serif;
                 line-height: 1.6;
+                cursor: crosshair;
                 padding: 20px;
                 text-shadow: 0 0 3px rgba(0, 255, 255, 0.7);
                 overflow-x: hidden;
+                perspective: 1000px; /* For 3D transforms */
             }
+
+            #webgl-bg {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                z-index: -1;
+                opacity: 0.7;
+            }
+
 
             .scanlines {
                 position: fixed;
@@ -43,7 +63,7 @@
                     rgba(0, 255, 255, 0.05) 3px,
                     rgba(0, 255, 255, 0.05) 4px
                 );
-                pointer-events: none;
+                pointer-events: none; 
                 z-index: 10;
             }
 
@@ -52,13 +72,42 @@
                 margin: 40px auto;
                 padding: 0 20px;
                 text-align: center;
-                animation: fadeIn 1.5s ease-in-out;
+                animation: fadeIn 2s ease-in-out;
+                position: relative;
+                z-index: 2;
             }
 
             h1 {
                 color: var(--primary-color);
-                text-shadow: 0 0 10px var(--primary-color);
-                animation: pulse 2.5s infinite;
+                text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+                animation: pulse 2.5s infinite, glitch 5s infinite alternate-reverse;
+                position: relative;
+                opacity: 0; /* Hidden for anime.js */
+            }
+
+            h1::before,
+            h1::after {
+                content: 'mmrc.vercel.appへようこそ';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: var(--background-color);
+                overflow: hidden;
+                clip: rect(0, 900px, 0, 0);
+            }
+
+            h1::before {
+                left: 2px;
+                text-shadow: -2px 0 var(--secondary-color);
+                animation: glitch-anim-1 2s infinite linear alternate-reverse;
+            }
+
+            h1::after {
+                left: -2px;
+                text-shadow: 2px 0 var(--primary-color), -1px 0 var(--secondary-color);
+                animation: glitch-anim-2 3s infinite linear alternate-reverse;
             }
 
             h4 {
@@ -90,7 +139,21 @@
                 padding: 24px;
                 margin-bottom: 24px;
                 box-shadow: 0 0 25px rgba(0, 255, 255, 0.2) inset, 0 0 15px rgba(0, 0, 0, 0.5);
-                position: relative;
+                position: relative; 
+                overflow: hidden;
+                transition: transform 0.4s ease, box-shadow 0.4s ease;
+            } 
+
+            .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 3px;
+                background: linear-gradient(90deg, transparent, var(--primary-color));
+                animation: border-flow 4s linear infinite;
+                box-shadow: 0 0 10px var(--primary-color);
             }
 
             .button {
@@ -109,10 +172,64 @@
             }
 
             .button:hover {
-                background-color: var(--primary-color);
+                background-color: var(--secondary-color);
                 color: var(--background-color);
-                box-shadow: 0 0 20px var(--primary-color);
+                border-color: var(--secondary-color);
+                box-shadow: 0 0 25px var(--secondary-color), 0 0 10px white;
                 text-shadow: none;
+                transform: scale(1.05);
+            }
+
+            .card:hover {
+                transform: translateY(-15px) scale(1.03); /* vanilla-tilt.js will handle rotation */
+                box-shadow: 0 0 40px rgba(0, 255, 255, 0.4), 0 0 20px rgba(0, 0, 0, 0.5);
+            } 
+
+            .audio-control {
+                position: fixed;
+                bottom: 15px;
+                right: 15px;
+                z-index: 100;
+                background: var(--glass-bg);
+                border: 1px solid var(--border-color);
+                color: var(--primary-color);
+                padding: 8px 12px;
+                cursor: pointer;
+                font-family: 'Orbitron', sans-serif;
+                opacity: 0.7;
+                transition: all 0.3s ease;
+            }
+
+            .audio-control:hover {
+                opacity: 1;
+                transform: scale(1.1);
+                box-shadow: 0 0 15px var(--primary-color);
+            }
+
+            .audio-control.muted {
+                color: var(--secondary-color);
+                border-color: var(--secondary-color);
+                text-shadow: 0 0 5px var(--secondary-color);
+            }
+
+            #terminal {
+                position: fixed;
+                bottom: 15px;
+                left: 15px;
+                width: 300px;
+                height: 150px;
+                background: rgba(0,0,0,0.5);
+                border: 1px solid var(--border-color);
+                backdrop-filter: blur(5px);
+                overflow: hidden;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 0.8em;
+                padding: 5px;
+                z-index: 99;
+            }
+            #terminal-content {
+                color: #0f0;
+                text-shadow: 0 0 5px #0f0;
             }
 
             @keyframes fadeIn {
@@ -121,19 +238,252 @@
             }
 
             @keyframes pulse {
-                0% { text-shadow: 0 0 10px var(--primary-color); }
-                50% { text-shadow: 0 0 25px var(--primary-color); }
-                100% { text-shadow: 0 0 10px var(--primary-color); }
+                0% { text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color); }
+                50% { text-shadow: 0 0 25px var(--primary-color), 0 0 50px var(--primary-color); }
+                100% { text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color); }
             }
+
+            @keyframes border-flow {
+                0% { left: -100%; }
+                100% { left: 100%; }
+            }
+
+            @keyframes glitch-anim-1 {
+                0% { clip: rect(132px, 9999px, 100px, 0); }
+                5% { clip: rect(12px, 9999px, 69px, 0); }
+                10% { clip: rect(100px, 9999px, 133px, 0); }
+                15% { clip: rect(14px, 9999px, 135px, 0); }
+                20% { clip: rect(14px, 9999px, 148px, 0); }
+                25% { clip: rect(11px, 9999px, 109px, 0); }
+                30% { clip: rect(13px, 9999px, 70px, 0); }
+                35% { clip: rect(137px, 9999px, 112px, 0); }
+                40% { clip: rect(43px, 9999px, 107px, 0); }
+                45% { clip: rect(148px, 9999px, 12px, 0); }
+                50% { clip: rect(120px, 9999px, 145px, 0); }
+                55% { clip: rect(13px, 9999px, 66px, 0); }
+                60% { clip: rect(143px, 9999px, 12px, 0); }
+                65% { clip: rect(12px, 9999px, 100px, 0); }
+                70% { clip: rect(111px, 9999px, 141px, 0); }
+                75% { clip: rect(13px, 9999px, 79px, 0); }
+                80% { clip: rect(130px, 9999px, 130px, 0); }
+                85% { clip: rect(14px, 9999px, 63px, 0); }
+                90% { clip: rect(132px, 9999px, 103px, 0); }
+                95% { clip: rect(14px, 9999px, 94px, 0); }
+                100% { clip: rect(1px, 9999px, 118px, 0); }
+            }
+
+            @keyframes glitch-anim-2 {
+                0% { clip: rect(82px, 9999px, 82px, 0); }
+                25% { clip: rect(46px, 9999px, 139px, 0); }
+                50% { clip: rect(13px, 9999px, 79px, 0); }
+                75% { clip: rect(148px, 9999px, 14px, 0); }
+                100% { clip: rect(131px, 9999px, 53px, 0); }
+            }
+
         </style>
+        <script>
+            // --- Sound Effects ---
+            const sfx = {
+                hover: new Audio('https://cdn.jsdelivr.net/gh/manzdev/code-projects/js-tetris/assets/audio/select.mp3'),
+                click: new Audio('https://cdn.jsdelivr.net/gh/manzdev/code-projects/js-tetris/assets/audio/pause.mp3'),
+                boot: new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_e7b6821a36.mp3?filename=booting-up-a-computer-6399.mp3'),
+                typing: new Audio('https://cdn.pixabay.com/download/audio/2022/02/07/audio_71135a8693.mp3?filename=typing-on-a-keyboard-14414.mp3')
+            };
+            sfx.hover.volume = 0.5;
+            sfx.click.volume = 0.6;
+
+            document.addEventListener('DOMContentLoaded', (event) => {
+                // --- 3D Background ---
+                let scene, camera, renderer, composer, particles;
+                const mouse = new THREE.Vector2();
+
+                function init3D() {
+                    const container = document.getElementById('webgl-bg');
+                    scene = new THREE.Scene();
+                    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    camera.position.z = 50;
+
+                    renderer = new THREE.WebGLRenderer({ alpha: true });
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    container.appendChild(renderer.domElement);
+
+                    // Particles
+                    const particleCount = 20000;
+                    const geometry = new THREE.BufferGeometry();
+                    const positions = new Float32Array(particleCount * 3);
+                    for (let i = 0; i < particleCount * 3; i++) {
+                        positions[i] = (Math.random() - 0.5) * 200;
+                    }
+                    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                    const material = new THREE.PointsMaterial({
+                        color: new THREE.Color(0x00ffff), // Initial color
+                        size: 0.1,
+                        transparent: true,
+                        blending: THREE.AdditiveBlending
+                    });
+                    particles = new THREE.Points(geometry, material);
+                    scene.add(particles);
+
+                    // Post-processing (CRT Effect)
+                    composer = new THREE.EffectComposer(renderer);
+                    composer.addPass(new THREE.RenderPass(scene, camera));
+
+                    const crtShader = {
+                        uniforms: {
+                            "tDiffuse": { value: null },
+                            "time": { value: 0.0 },
+                            "scanlineIntensity": { value: 0.3 },
+                            "noiseIntensity": { value: 0.03 },
+                            "vignette": { value: 0.7 }
+                        },
+                        vertexShader: `
+                            varying vec2 vUv;
+                            void main() {
+                                vUv = uv;
+                                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                            }
+                        `,
+                        fragmentShader: `
+                            uniform sampler2D tDiffuse;
+                            uniform float time;
+                            uniform float scanlineIntensity;
+                            uniform float noiseIntensity;
+                            uniform float vignette;
+                            varying vec2 vUv;
+
+                            float random(vec2 st) {
+                                return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+                            }
+
+                            void main() {
+                                vec4 color = texture2D(tDiffuse, vUv);
+                                
+                                // Scanlines
+                                float scanline = sin(vUv.y * 800.0) * scanlineIntensity;
+                                color.rgb -= scanline;
+
+                                // Noise
+                                float noise = (random(vUv + time) - 0.5) * noiseIntensity;
+                                color.rgb += noise;
+
+                                // Vignette
+                                float dist = distance(vUv, vec2(0.5));
+                                color.rgb *= (1.0 - pow(dist, 2.0) * vignette);
+
+                                gl_FragColor = color;
+                            }
+                        `
+                    };
+                    const crtPass = new THREE.ShaderPass(crtShader);
+                    composer.addPass(crtPass);
+
+                    window.addEventListener('resize', onWindowResize, false);
+                    document.addEventListener('mousemove', onMouseMove, false);
+                    animate();
+                }
+
+                function onWindowResize() {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    composer.setSize(window.innerWidth, window.innerHeight);
+                }
+
+                function onMouseMove(event) {
+                    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                    const hue = (event.clientX / window.innerWidth);
+                    if (particles) {
+                        particles.material.color.setHSL(hue, 1.0, 0.5);
+                    }
+                }
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    particles.rotation.x += 0.0001 + (mouse.y * 0.0005);
+                    particles.rotation.y += 0.0002 + (mouse.x * 0.0005);
+                    composer.passes[1].uniforms.time.value += 0.05;
+                    composer.render(); // Use composer to render
+                }
+
+                init3D();
+
+                sfx.boot.volume = 0.4;
+                sfx.boot.play();
+
+                // --- Hacker Text Animation ---
+                anime({
+                    targets: 'h1',
+                    opacity: [0, 1],
+                    delay: 500,
+                    begin: function() {
+                        sfx.typing.loop = true;
+                        sfx.typing.play();
+                    },
+                    duration: 1000,
+                    easing: 'easeOutExpo',
+                    complete: () => sfx.typing.pause()
+                });
+
+                // --- Audio Control ---
+                const bgm = document.getElementById('bgm');
+                const audioControl = document.getElementById('audio-control');
+                bgm.volume = 0.3;
+                audioControl.addEventListener('click', () => {
+                    if (bgm.paused) {
+                        bgm.play();
+                        audioControl.textContent = 'BGM: ON';
+                        audioControl.classList.remove('muted');
+                    } else {
+                        bgm.pause();
+                        audioControl.textContent = 'BGM: OFF';
+                        audioControl.classList.add('muted');
+                    }
+                });
+
+                // --- UI Sound Effects ---
+                document.querySelectorAll('.button, a').forEach(el => {
+                    el.addEventListener('mouseenter', () => sfx.hover.play());
+                    el.addEventListener('click', () => sfx.click.play());
+                });
+
+                // --- Card 3D Tilt Effect ---
+                VanillaTilt.init(document.querySelectorAll(".card"), { max: 15, speed: 400, glare: true, "max-glare": 0.5 });
+
+                // --- Terminal ---
+                const terminalContent = document.getElementById('terminal-content');
+                const logLines = [
+                    'SYSTEM BOOT... OK', 'INITIATING KERNEL...', 'LOADING MODULES...', 'VFS: Mounted root filesystem.',
+                    'NET: Registered protocol family 2.', 'TCP: cubic registered', 'Initializing memory...', 'Memory check: 100%',
+                    'Connecting to network...', 'DHCP discover sent.', 'IP address acquired: 192.168.1.101',
+                    'Firewall activated.', 'Scanning for threats... 0 found.', 'UI RENDERER... ONLINE',
+                    'AWAITING USER INPUT...'
+                ];
+                let lineIndex = 0;
+                function writeToTerminal() {
+                    if (lineIndex < logLines.length) {
+                        const line = document.createElement('div');
+                        line.textContent = `> ${logLines[lineIndex]}`;
+                        terminalContent.appendChild(line);
+                        terminalContent.scrollTop = terminalContent.scrollHeight;
+                        lineIndex++;
+                    } else {
+                        // Loop or stop
+                        lineIndex = 0;
+                        terminalContent.innerHTML = '';
+                    }
+                }
+                setInterval(writeToTerminal, 700);
+            });
+        </script>
     </head>
     <body>
-        <div class="scanlines"></div>
+        <div id="webgl-bg"></div>
         <div class="container">
             <h1>mmrc.vercel.appへようこそ</h1>
             <p>このサイトは、さまざまなリソースやツールを提供しています。ぜひご活用ください。</p>
             
-            <div class="card">
+            <div class="card" data-tilt>
                 <h4>MC-ServerMake</h4>
                 <img src="47a7b769-0ba7-4e49-9dd6-cfef2600532f.png" alt="MC-ServerMake Logo" width="100px" height="100px">
                 <p>MC-ServerMakeは、Minecraftサーバーを簡単に作成・管理できるツールです。</p>
@@ -144,10 +494,12 @@
                 <a href="mcaqua.html" style="margin-top: 10px; display: inline-block;">MC-ServerMake解説ページへ</a>
             </div>
 
-            <div class="card">
+            <div class="card" data-tilt>
                 <h4>極秘ページ</h4>
                 <a href="gokuhi.html" class="button">移動する</a>
             </div>
         </div>
+        <audio id="bgm" src="https://cdn.pixabay.com/download/audio/2022/11/21/audio_a61a2217b8.mp3" loop></audio>
+        <button id="audio-control" class="audio-control muted">BGM: OFF</button>
     </body>
 </html>

@@ -7,6 +7,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <!-- External Libraries for Ultimate Flashiness -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <style>
         :root {
             --primary-color: #00ffff;
@@ -21,10 +30,7 @@
 
         body {
             margin: 0;
-            background-color: var(--background-color);
-            background-image: 
-                linear-gradient(var(--border-color) 1px, transparent 1px),
-                linear-gradient(to right, var(--border-color) 1px, var(--background-color) 1px);
+            background-color: var(--background-color); /* Fallback */
             background-size: 40px 40px;
             color: var(--text-color);
             font-family: 'Orbitron', sans-serif;
@@ -33,22 +39,42 @@
             justify-content: center;
             height: 100vh;
             text-shadow: 0 0 3px rgba(0, 255, 255, 0.7);
+            cursor: crosshair;
+            perspective: 1000px; /* For 3D transforms */
+        }
+
+        #webgl-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.7;
         }
 
         .auth-container {
             background: var(--glass-bg);
             backdrop-filter: blur(8px);
             border: 1px solid var(--border-color);
-            padding: 40px;
+            padding: 50px;
             text-align: center;
             box-shadow: 0 0 25px rgba(0, 255, 255, 0.2) inset, 0 0 15px rgba(0, 0, 0, 0.5);
-            animation: fadeIn 1.5s ease-in-out;
+            position: relative;
+            animation: fadeIn 2s ease-in-out;
+            z-index: 2;
+        }
+
+        .auth-container:hover {
+            /* transform: scale(1.02); vanilla-tilt will handle this */
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.4), 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
         h1 {
             color: var(--primary-color);
             text-shadow: 0 0 10px var(--primary-color);
             margin-top: 0;
+            opacity: 85; /* For anime.js */
         }
 
         #pwd {
@@ -62,10 +88,12 @@
             width: 250px;
             text-align: center;
             outline: none;
+            transition: box-shadow 0.3s ease;
         }
 
         #pwd:focus {
-            box-shadow: 0 0 15px var(--primary-color) inset;
+            box-shadow: 0 0 15px var(--primary-color) inset, 0 0 10px var(--primary-color);
+            border-color: var(--primary-color);
         }
 
         button {
@@ -81,9 +109,10 @@
         }
 
         button:hover {
-            background-color: var(--primary-color);
+            background-color: var(--secondary-color);
             color: var(--background-color);
-            box-shadow: 0 0 20px var(--primary-color);
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 25px var(--secondary-color), 0 0 10px white;
             text-shadow: none;
         }
 
@@ -100,11 +129,149 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
+
     </style>
+    <script>
+        // --- Sound Effects ---
+        const sfx = {
+            hover: new Audio('https://cdn.jsdelivr.net/gh/manzdev/code-projects/js-tetris/assets/audio/select.mp3'),
+            click: new Audio('https://cdn.jsdelivr.net/gh/manzdev/code-projects/js-tetris/assets/audio/pause.mp3'),
+            success: new Audio('https://cdn.jsdelivr.net/gh/manzdev/code-projects/js-tetris/assets/audio/success.mp3'),
+            error: new Audio('https://cdn.jsdelivr.net/gh/manzdev/code-projects/js-tetris/assets/audio/error.mp3'),
+            boot: new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_e7b6821a36.mp3?filename=booting-up-a-computer-6399.mp3'),
+            typing: new Audio('https://cdn.pixabay.com/download/audio/2022/02/07/audio_71135a8693.mp3?filename=typing-on-a-keyboard-14414.mp3')
+        };
+        sfx.hover.volume = 0.5;
+        sfx.click.volume = 0.4;
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // --- 3D Background ---
+            let scene, camera, renderer, composer, particles;
+            const mouse = new THREE.Vector2();
+
+            function init3D() {
+                const container = document.getElementById('webgl-bg');
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 50;
+
+                renderer = new THREE.WebGLRenderer({ alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                container.appendChild(renderer.domElement);
+
+                // Particles
+                const particleCount = 20000;
+                const geometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(particleCount * 3);
+                for (let i = 0; i < particleCount * 3; i++) {
+                    positions[i] = (Math.random() - 0.5) * 200;
+                }
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                const material = new THREE.PointsMaterial({
+                    color: new THREE.Color(0x00ffff),
+                    size: 0.1,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending
+                });
+                particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+
+                // Post-processing (CRT Effect)
+                composer = new THREE.EffectComposer(renderer);
+                composer.addPass(new THREE.RenderPass(scene, camera));
+
+                // Bloom Pass
+                const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.0, 0.4, 0.85);
+                composer.addPass(bloomPass);
+
+                const crtShader = {
+                    uniforms: {
+                        "tDiffuse": { value: null }, "time": { value: 0.0 }, "scanlineIntensity": { value: 0.3 }, "noiseIntensity": { value: 0.03 }, "vignette": { value: 0.7 }
+                    },
+                    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+                    fragmentShader: `
+                        uniform sampler2D tDiffuse; uniform float time; uniform float scanlineIntensity; uniform float noiseIntensity; uniform float vignette; varying vec2 vUv;
+                        float random(vec2 st) { return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123); }
+                        void main() {
+                            vec4 color = texture2D(tDiffuse, vUv);
+                            float scanline = sin(vUv.y * 800.0) * scanlineIntensity; color.rgb -= scanline;
+                            float noise = (random(vUv + time) - 0.5) * noiseIntensity; color.rgb += noise;
+                            float dist = distance(vUv, vec2(0.5)); color.rgb *= (1.0 - pow(dist, 2.0) * vignette);
+                            gl_FragColor = color;
+                        }`
+                };
+                const crtPass = new THREE.ShaderPass(crtShader);
+                composer.addPass(crtPass);
+
+                window.addEventListener('resize', onWindowResize, false);
+                document.addEventListener('mousemove', onMouseMove, false);
+                animate();
+            }
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                composer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            function onMouseMove(event) {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                const hue = (event.clientX / window.innerWidth);
+                particles.material.color.setHSL(hue, 1.0, 0.5);
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                particles.rotation.x += 0.0001 + (mouse.y * 0.0005);
+                particles.rotation.y += 0.0002 + (mouse.x * 0.0005);
+                composer.passes[1].uniforms.time.value += 0.05;
+                composer.render(); // Use composer to render
+            }
+
+            init3D();
+
+            sfx.boot.volume = 0.4;
+            sfx.boot.play();
+
+            // --- Hacker Text Animation ---
+            const textWrapper = document.querySelector('h1');
+            textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+            anime.timeline({loop: false})
+              .add({
+                targets: 'h1',
+                opacity: [0,1],
+                duration: 50,
+                delay: 500,
+                begin: function() {
+                    sfx.typing.loop = true;
+                    sfx.typing.play();
+                }
+              })
+              .add({
+                targets: '.letter',
+                opacity: [0,1],
+                duration: 1200,
+                delay: (el, i) => 50 * (i+1),
+                complete: () => sfx.typing.pause()
+              });
+
+            // --- UI Sound Effects ---
+            document.querySelectorAll('button, input').forEach(el => {
+                el.addEventListener('mouseenter', () => sfx.hover.play());
+            });
+            document.querySelector('button').addEventListener('click', () => sfx.click.play());
+
+            // --- Initialize Vanilla Tilt ---
+            VanillaTilt.init(document.querySelector(".auth-container"), { max: 10, speed: 400, glare: true, "max-glare": 0.4 });
+        });
+    </script>
 </head>
 <body>
-    <div class="auth-container">
-  <h1>GoKuHi PAGE GATE</h1>
+    <div id="webgl-bg"></div>
+    <div class="auth-container" data-tilt>
+    <h1>CodeNinshow</h1>
   <input id="pwd" type="password" placeholder="パスワードを入力" style="font-size:16px;padding:6px;">
   <button id="btn" style="font-size:16px;padding:6px 10px;">実行</button>
   <p id="msg" style="font-weight:bold"></p>
@@ -134,10 +301,17 @@
     function checkAndRun(){
       const val = input.value || "";
       if (val === ok1 || val === ok2) {
+        msg.classList.remove("error");
+        msg.classList.add("success");
         msg.textContent = "✅ 成功！秘密モード起動！";
-        location.href = "gokuhi_.html";
+        sfx.success.play();
+        localStorage.setItem('gokuhi_authenticated', 'true');
+        setTimeout(() => location.href = "gokuhi_.html", 1000);
       } else {
+        msg.classList.remove("success");
+        msg.classList.add("error");
         msg.textContent = "❌ パスワードが違います。";
+        sfx.error.play();
       }
     }
   })();

@@ -2,45 +2,126 @@
     <head>
         <title>MC-ServerMake解説ページ</title>
         <link rel="icon" href="MCAqua.ico">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
         <style>
-                        body {
-                background-color: black;
-                color: #f8f8f8;
+            :root {
+                --primary-color: #00ffff;
+                --secondary-color: #ff5e00;
+                --background-color: #0a0a1a;
+                --glass-bg: rgba(10, 10, 26, 0.6);
+                --border-color: rgba(0, 255, 255, 0.5);
+                --text-color: #e0e0e0;
+                --subtle-text-color: #b0b0b0;
+            }
+
+            body {
+                margin: 0;
+                background-color: var(--background-color);
+                background-image: 
+                    linear-gradient(var(--border-color) 1px, transparent 1px),
+                    linear-gradient(to right, var(--border-color) 1px, var(--background-color) 1px);
+                background-position: 0 0;
+                animation: moveGrid 30s linear infinite;
+                background-size: 40px 40px;
+                color: var(--text-color);
+                font-family: 'Orbitron', sans-serif;
+                line-height: 1.6;
+                padding: 20px;
+                text-shadow: 0 0 3px rgba(0, 255, 255, 0.7);
+                cursor: crosshair;
+            }
+
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: radial-gradient(circle at var(--x) var(--y), rgba(0, 255, 255, 0.15), transparent 25vw);
+                pointer-events: none;
+                z-index: 11;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+            body:hover::before { opacity: 1; }
+
+            .container {
+                max-width: 800px;
+                margin: 40px auto;
+                padding: 0 20px;
                 text-align: center;
-                margin-top: 50px;
+                animation: fadeIn 1.5s ease-in-out;
             }
 
             h1 {
-                color: #f8f8f8;
+                color: var(--primary-color);
+                text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+                animation: pulse 2.5s infinite;
+            }
+
+            h4 {
+                color: var(--secondary-color);
+                text-shadow: 0 0 7px var(--secondary-color);
+                font-size: 1.5em;
             }
 
             p {
-                color: #979797;
+                color: var(--subtle-text-color);
+                text-shadow: none;
+                font-size: 1.1em;
             }
 
             a {
-                color: #228dff;
+                color: var(--primary-color);
                 text-decoration: none;
+                transition: all 0.3s ease;
+                font-size: 1.2em;
+                display: inline-block;
+                margin-top: 20px;
+                border: 1px solid var(--border-color);
+                padding: 10px 20px;
+                text-shadow: 0 0 5px var(--primary-color);
             }
 
             a:hover {
-                text-decoration: underline;
+                color: var(--background-color);
+                background-color: var(--secondary-color);
+                border-color: var(--secondary-color);
+                box-shadow: 0 0 25px var(--secondary-color), 0 0 10px white;
+                text-shadow: none;
+                transform: scale(1.05);
             }
 
-            footer {
-                margin-top: 50px;
-                font-size: 0.9em;
-                color: #999;
+            .card {
+                background: var(--glass-bg);
+                backdrop-filter: blur(8px);
+                border: 1px solid var(--border-color);
+                padding: 24px;
+                margin-top: 40px;
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.2) inset, 0 0 15px rgba(0, 0, 0, 0.5);
             }
         </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.addEventListener('mousemove', e => {
+                    document.documentElement.style.setProperty('--x', e.clientX + 'px');
+                    document.documentElement.style.setProperty('--y', e.clientY + 'px');
+                });
+            });
+        </script>
     </head>
     <body>
-        <h1>MC-ServerMake解説ページへようこそ！</h1>
-        <a href="index.html">MC-ServerMake配布ページに戻る</a>
-        <div>
-            <h4>MC-ServerMake旧バージョンから新バージョンへのサーバーフォルダ移動のやりかた</h4>
-            <p>MC-ServerMake\main\の中にサーバーフォルダがあるので、これを新しいバージョンのMC-ServerMake\main\に移動してください。</p>
-            <p>移動が完了したら、新しいバージョンのMC-ServerMakeを起動してください(圧)。</p>
+        <div class="container">
+            <h1>MC-ServerMake解説ページ</h1>
+            <div class="card">
+                <h4>旧バージョンからのサーバーフォルダ移行</h4>
+                <p>MC-ServerMake/main/ の中にあるサーバーフォルダを、新しいバージョンの MC-ServerMake/main/ に移動してください。</p>
+                <p>移動が完了したら、新しいバージョンのMC-ServerMakeを起動してください。</p>
+            </div>
+            <a href="index.html">配布ページに戻る</a>
         </div>
     </body>
 </html>
