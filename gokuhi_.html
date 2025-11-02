@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Gokuhi Page</title>
+        <link rel="icon" href="MCAqua.ico">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --primary-color: #00ffff;
+                --secondary-color: #ff5e00;
+                --background-color: #0a0a1a;
+                --glass-bg: rgba(10, 10, 26, 0.6);
+                --border-color: rgba(0, 255, 255, 0.5);
+                --text-color: #e0e0e0;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: var(--background-color);
+                background-image: 
+                    linear-gradient(var(--border-color) 0.5px, transparent 0.5px),
+                    linear-gradient(to right, var(--border-color) 0.5px, var(--background-color) 0.5px);
+                background-size: 40px 40px;
+                color: var(--text-color);
+                font-family: 'Orbitron', sans-serif;
+                overflow-y: auto;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 40px auto;
+                padding: 0 20px;
+                text-align: center;
+            }
+
+            h1 {
+                color: var(--primary-color);
+                text-shadow: 0 0 10px var(--primary-color);
+                animation: pulse 2.5s infinite;
+            }
+
+            .video-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                gap: 24px;
+                margin-top: 40px;
+            }
+
+            .card {
+                background: var(--glass-bg);
+                backdrop-filter: blur(8px);
+                border: 1px solid var(--border-color);
+                padding: 16px;
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.2) inset, 0 0 15px rgba(0, 0, 0, 0.5);
+            }
+
+            .video-wrapper {
+                position: relative;
+                padding-bottom: 56.25%; /* 16:9 aspect ratio */
+                height: 0;
+                overflow: hidden;
+            }
+
+            iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border: none;
+            }
+
+            @keyframes pulse {
+                0% { text-shadow: 0 0 10px var(--primary-color); }
+                50% { text-shadow: 0 0 25px var(--primary-color); }
+                100% { text-shadow: 0 0 10px var(--primary-color); }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>音スポで使ってほしい曲</h1>
+            <div class="video-grid">
+                <div class="card"><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/1-jhJrVdNAg?si=SMPabmaQ1I70mar3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
+                <div class="card"><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/Gx1nu832tYE?si=W8VR61QUN2zaq0B6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
+                <div class="card"><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/MQ9UmCLpq2Q?si=8uJhhNRV7MqttSml" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
+                <div class="card"><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/m-yMn_Kp4Is?si=BdSMY-IZjuVWGGCE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></div>
+            </div>
+        </div>
+    </body>
+</html>
