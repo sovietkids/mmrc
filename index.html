@@ -245,6 +245,27 @@
                 text-shadow: 0 0 5px #0f0;
             }
 
+            /* Global Scrollbar Styles */
+            ::-webkit-scrollbar {
+                width: 12px;
+                background-color: var(--background-color);
+            }
+
+            ::-webkit-scrollbar-track {
+                background: rgba(10, 10, 26, 0.5);
+                border-left: 1px solid var(--border-color);
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background-color: var(--primary-color);
+                box-shadow: 0 0 10px var(--primary-color);
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: var(--secondary-color);
+                box-shadow: 0 0 15px var(--secondary-color);
+            }
+
             /* Custom scrollbar for chat */
             #chat-box::-webkit-scrollbar {
                 width: 8px;
@@ -263,6 +284,25 @@
             }
             .chat-input-group { display: flex; margin-top: 15px; }
             #chat-msg:focus { box-shadow: 0 0 10px var(--primary-color); }
+
+            .hidden-iframe {
+                display: none;
+                border: none;
+                width: 0;
+                height: 0;
+            }
+
+            /* Custom scrollbar for the iframe wrapper */
+            .iframe-wrapper::-webkit-scrollbar {
+                width: 8px;
+            }
+            .iframe-wrapper::-webkit-scrollbar-track {
+                background: rgba(0,0,0,0.3);
+            }
+            .iframe-wrapper::-webkit-scrollbar-thumb {
+                background-color: var(--primary-color);
+            }
+            .iframe-wrapper::-webkit-scrollbar-thumb:hover { background-color: var(--secondary-color); }
 
             @keyframes fadeIn {
                 from { opacity: 0; transform: translateY(20px); }
@@ -525,7 +565,12 @@
                 <p>ファイルを展開して、start.batをダブルクリックし、文章に従ってください</p>
                 <a href="mcaqua.html" style="margin-top: 10px; display: inline-block;">MC-ServerMake解説ページへ</a>
             </div>
-            <iframe src="https://render-socket-io-server-mmrc-vercel-app.onrender.com/" frameborder="0"></iframe>
+            <div class="card" data-tilt>
+                <h4>Socket.ioチャット</h4>
+                <p>チャット行かないとかマジ損だゾ～！””””！””””””！早く来いよオオオオオ！！！！（””）</p>
+                <p>リアルタイムでメッセージを交換できるチャットルームです。</p>
+                <a href="https://render-socket-io-server-mmrc-vercel-app.onrender.com/" class="button">チャットルームに入る</a>
+            </div>
             <div class="card" data-tilt>
                 <h4>極秘ページ</h4>
                 <a href="gokuhi.html" class="button">移動する</a>
