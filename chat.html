@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head><title>Chat</title></head>
+  <body>
+    <h1>Socket.io Chat</h1>
+    <input id="msg" placeholder="message">
+    <button onclick="send()">Send</button>
+    <ul id="list"></ul>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+      // 自分のSocket.ioサーバーのURLに変更
+      const socket = io("https://your-socket-server.onrender.com");
+
+      // 過去のメッセージを表示
+      socket.on("chat_history", (messages) => {
+        const list = document.getElementById("list");
+        messages.forEach(m => {
+          const li = document.createElement("li");
+          li.textContent = `[${new Date(m.time).toLocaleTimeString()}] ${m.text}`;
+          list.appendChild(li);
+        });
+      });
+
+      // 新しいメッセージを受信
+      socket.on("chat", (m) => {
+        const li = document.createElement("li");
+        li.textContent = `[${new Date(m.time).toLocaleTimeString()}] ${m.text}`;
+        document.getElementById("list").appendChild(li);
+      });
+
+      // 送信
+      function send() {
+        const msg = document.getElementById("msg").value;
+        if (!msg.trim()) return;
+        socket.emit("chat", msg);
+        document.getElementById("msg").value = "";
+      }
+    </script>
+  </body>
+</html>

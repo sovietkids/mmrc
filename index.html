@@ -179,11 +179,24 @@
                 text-shadow: none;
                 transform: scale(1.05);
             }
-
             .card:hover {
                 transform: translateY(-15px) scale(1.03); /* vanilla-tilt.js will handle rotation */
                 box-shadow: 0 0 40px rgba(0, 255, 255, 0.4), 0 0 20px rgba(0, 0, 0, 0.5);
             } 
+
+            .cardnoani {
+                background: var(--glass-bg);
+                backdrop-filter: blur(8px);
+                border: 1px solid var(--border-color);
+                border-radius: 0px;
+                padding: 24px;
+                margin-bottom: 24px;
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.2) inset, 0 0 15px rgba(0, 0, 0, 0.5);
+                position: relative; 
+                overflow: hidden;
+                /* No transition or hover transform */
+            }
+            .cardnoani::before { content: none; }
 
             .audio-control {
                 position: fixed;
@@ -231,6 +244,25 @@
                 color: #0f0;
                 text-shadow: 0 0 5px #0f0;
             }
+
+            /* Custom scrollbar for chat */
+            #chat-box::-webkit-scrollbar {
+                width: 8px;
+            }
+            #chat-box::-webkit-scrollbar-track {
+                background: rgba(0,0,0,0.3);
+            }
+            #chat-box::-webkit-scrollbar-thumb {
+                background-color: var(--primary-color);
+                border-radius: 4px;
+                border: 2px solid transparent;
+                background-clip: content-box;
+            }
+            #chat-box::-webkit-scrollbar-thumb:hover {
+                background-color: var(--secondary-color);
+            }
+            .chat-input-group { display: flex; margin-top: 15px; }
+            #chat-msg:focus { box-shadow: 0 0 10px var(--primary-color); }
 
             @keyframes fadeIn {
                 from { opacity: 0; transform: translateY(20px); }
@@ -448,7 +480,7 @@
                 });
 
                 // --- Card 3D Tilt Effect ---
-                VanillaTilt.init(document.querySelectorAll(".card"), { max: 15, speed: 400, glare: true, "max-glare": 0.5 });
+                VanillaTilt.init(document.querySelectorAll(".card[data-tilt]"), { max: 15, speed: 400, glare: true, "max-glare": 0.5 });
 
                 // --- Terminal ---
                 const terminalContent = document.getElementById('terminal-content');
@@ -493,7 +525,62 @@
                 <p>ファイルを展開して、start.batをダブルクリックし、文章に従ってください</p>
                 <a href="mcaqua.html" style="margin-top: 10px; display: inline-block;">MC-ServerMake解説ページへ</a>
             </div>
+            <div ninsikiid="1" class="cardnoani">
+                <h4>チャットルーム</h4>
+                <p>リアルタイムでメッセージを交換できます。</p>
+                <div id="chat-box" style="height: 200px; overflow-y: auto; text-align: left; border: 1px solid var(--border-color); padding: 10px; background: rgba(0,0,0,0.3); font-size: 0.9em;">
+                    <ul id="chat-list" style="list-style: none; padding: 0; margin: 0;"></ul>
+                </div>
+                <div class="chat-input-group">
+                    <input id="chat-msg" type="text" placeholder="メッセージを入力..." 
+                           style="flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; font-family: 'Orbitron', sans-serif; transition: box-shadow 0.3s ease;">
+                    <button id="chat-send" class="button" style="margin-left: 10px; border-radius: 0;">送信</button>
+                </div>
+            </div>
 
+<!-- Socket.io -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+  // 自分のSocket.ioサーバーのURLに変更
+  const socket = io("https://render-socket-io-server-mmrc-vercel-app.onrender.com/");
+
+  const list = document.getElementById("chat-list");
+  const input = document.getElementById("chat-msg");
+  const sendBtn = document.getElementById("chat-send");
+  const chatBox = document.getElementById("chat-box");
+
+  // 履歴の受信
+  socket.on("chat_history", (messages) => {
+    list.innerHTML = "";
+    messages.forEach(m => addMessage(m));
+  });
+
+  // 新しいメッセージを受信
+  socket.on("chat", (m) => addMessage(m));
+
+  // メッセージ送信
+  sendBtn.onclick = () => {
+    const msg = input.value.trim();
+    if (!msg) return;
+    socket.emit("chat", msg);
+    input.value = "";
+  };
+
+  // Enterキーでも送信
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendBtn.click();
+  });
+
+  // 表示関数
+  function addMessage(m) {
+    const li = document.createElement("li");
+    const time = new Date(m.time).toLocaleTimeString();
+    const senderId = m.sender ? m.sender.split('.').slice(0, 2).join('.') + '.*.*' : 'anonymous';
+    li.innerHTML = `<span style="color: var(--secondary-color);">${time}</span> <span style="color: var(--primary-color);">[${senderId}]</span>: ${m.text}`;
+    list.appendChild(li);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+</script>
             <div class="card" data-tilt>
                 <h4>極秘ページ</h4>
                 <a href="gokuhi.html" class="button">移動する</a>
