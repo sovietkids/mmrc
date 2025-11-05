@@ -525,62 +525,7 @@
                 <p>ファイルを展開して、start.batをダブルクリックし、文章に従ってください</p>
                 <a href="mcaqua.html" style="margin-top: 10px; display: inline-block;">MC-ServerMake解説ページへ</a>
             </div>
-            <div ninsikiid="1" class="cardnoani">
-                <h4>チャットルーム</h4>
-                <p>リアルタイムでメッセージを交換できます。</p>
-                <div id="chat-box" style="height: 200px; overflow-y: auto; text-align: left; border: 1px solid var(--border-color); padding: 10px; background: rgba(0,0,0,0.3); font-size: 0.9em;">
-                    <ul id="chat-list" style="list-style: none; padding: 0; margin: 0;"></ul>
-                </div>
-                <div class="chat-input-group">
-                    <input id="chat-msg" type="text" placeholder="メッセージを入力..." 
-                           style="flex-grow: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); color: var(--text-color); padding: 8px; font-family: 'Orbitron', sans-serif; transition: box-shadow 0.3s ease;">
-                    <button id="chat-send" class="button" style="margin-left: 10px; border-radius: 0;">送信</button>
-                </div>
-            </div>
-
-<!-- Socket.io -->
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script>
-  // 自分のSocket.ioサーバーのURLに変更
-  const socket = io("https://render-socket-io-server-mmrc-vercel-app.onrender.com/");
-
-  const list = document.getElementById("chat-list");
-  const input = document.getElementById("chat-msg");
-  const sendBtn = document.getElementById("chat-send");
-  const chatBox = document.getElementById("chat-box");
-
-  // 履歴の受信
-  socket.on("chat_history", (messages) => {
-    list.innerHTML = "";
-    messages.forEach(m => addMessage(m));
-  });
-
-  // 新しいメッセージを受信
-  socket.on("chat", (m) => addMessage(m));
-
-  // メッセージ送信
-  sendBtn.onclick = () => {
-    const msg = input.value.trim();
-    if (!msg) return;
-    socket.emit("chat", msg);
-    input.value = "";
-  };
-
-  // Enterキーでも送信
-  input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendBtn.click();
-  });
-
-  // 表示関数
-  function addMessage(m) {
-    const li = document.createElement("li");
-    const time = new Date(m.time).toLocaleTimeString();
-    const senderId = m.sender ? m.sender.split('.').slice(0, 2).join('.') + '.*.*' : 'anonymous';
-    li.innerHTML = `<span style="color: var(--secondary-color);">${time}</span> <span style="color: var(--primary-color);">[${senderId}]</span>: ${m.text}`;
-    list.appendChild(li);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-</script>
+            <iframe src="https://render-socket-io-server-mmrc-vercel-app.onrender.com/" frameborder="0"></iframe>
             <div class="card" data-tilt>
                 <h4>極秘ページ</h4>
                 <a href="gokuhi.html" class="button">移動する</a>
