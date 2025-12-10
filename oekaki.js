@@ -1,7 +1,7 @@
 let camera_x = -190;
 let camera_y = -150;
 
-const socket = io("http://153.224.43.222:3000/");
+const socket = io("https://manmaru.servehalflife.com:3000");
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
