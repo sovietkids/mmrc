@@ -1,4 +1,4 @@
-const socket = io("");
+const socket = io("http://153.224.43.222:3000/");
 
 // --- DOM Elements ---
 const loginModal = document.getElementById('login-modal');
