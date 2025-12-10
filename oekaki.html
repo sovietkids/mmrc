@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>自由オンライン超特大お絵描きボード</title>
+        <link rel="icon" href="MCAqua.ico">
+        <meta charset="UTF-8">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="oekaki.css">
+    </head>
+    <body>
+        <h1>自由オンライン超特大お絵描きボード(FOHDB)</h1>
+        <p>WSDA又は矢印キーで操作、マウス押してお絵描き</p>
+        <input type="color" id="colorPicker" value="#00aa00">
+        <p>移動スピード:</p><input type="text" id="speedInput" value="5" style="width: 40px;">
+        <canvas id="main" width="1600" height="900"></canvas>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="oekaki.js" defer></script>
+    </body>
+</html>

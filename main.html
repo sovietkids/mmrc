@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <title>manmaru</title>
+        <link rel="icon" href="MCAqua.ico">
+        <meta charset="UTF-8">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="main.css">
+        <!-- External Libraries for Ultimate Flashiness -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>manmaruへようこそ</h1>
+            <p>このサイトは、さまざまなリソースやツールを提供しています。ぜひご活用ください。</p>
+            
+            <div class="card" data-tilt>
+                <h4>MC-ServerMake</h4>
+                <img src="MCSM.png" alt="MC-ServerMake Logo" width="100px" height="100px">
+                <p>MC-ServerMakeは、Minecraftサーバーを簡単に作成・管理できるツールです。</p>
+                <p>とてもSF風なUIです。操作はコンソールですが、番号を入力するだけなので、意外に簡単です。</p>
+                <p>まだ開発中の機能もありますので、今後のアップデートにご期待ください。</p>
+                <a href="https://d.kuku.lu/sdxcyjpbm" class="button">MC-ServerMake ver2.0をダウンロード(zip)</a>
+                <p>ファイルを展開して、start.batをダブルクリックし、文章に従ってください</p>
+            </div>
+            <div class="card" data-tilt>
+                <h4>24ch</h4>
+                <p>リアルタイム匿名チャットアプリケーションだゾ。</p>
+                <p>スレッドを作ってチャットができますぞ！</p>
+                <button onclick="location.href = 'chat.html'" class="button">GO!</button>
+            </div>
+            <div class="card">
+                <h4>自由オンライン超特大お絵描きボード(FOHDB)</h4>
+                <p>みんなでお絵描きできるボードだゾ。</p>
+                <button onclick="location.href = 'oekaki.html'" class="button">GO!</button>
+            </div>
+            <div class="card" data-tilt>
+                <h4>極秘ページ</h4>
+                <a href="gokuhi_gate.html" class="button">移動する</a>
+            </div>
+        </div>
+        <audio id="bgm" src="https://cdn.pixabay.com/download/audio/2022/11/21/audio_a61a2217b8.mp3" loop></audio>
+        <button id="audio-control" class="audio-control muted">BGM: OFF</button>
+    </body>
+</html>
