@@ -8,7 +8,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
-let PAGE = 'public/index.html'; 
+let PAGE = '/public/index.html'; 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 // --- Drawing persistent storage ---
 const drawingFile = path.join(__dirname, 'data', 'drawing.json');
