@@ -375,53 +375,7 @@ io.on('connection', (socket) => {
       console.log(`${socket.username} left`);
     }
   });
-
-socket.on('AIMessage', async (data) => { // 👈 async を追加
-        console.log('AIMessage received:', data);
-        
-        // ----------------------------------------------------
-        // main() のロジックをここに移動
-        let AIMessage = data; // ローカル変数として扱う
-        let NewAIMessage = AIMessage.substring(0, 36);
-        AIMessage = AIMessage.substring(36);
-        
-        // 【AIサービスとの統合】
-
-        //利用制限　1日に20回まで過ぎたら貼り付ける
-        //        const response = await ai.models.generateContent({
-        //    model: "gemini-2.5-flash",
-      //    contents: AIMessage,
-        //});
-
-        console.log(response.text);
-        // console.log(API_KEY); // APIキーのコンソール出力はデバッグ目的で削除しても良い
-        
-        // socket はこのスコープ内で定義されているため、正常に動作する
-        console.log("SERVER: Emitting AI Response:", response.text);
-        socket.emit('AIResponse', response.text); 
-        // ----------------------------------------------------
-        
-        // main() の呼び出しは不要
-        // main(); 
-    });
-    
-    // ... (io.on('connection') の閉じ括弧)
 });
-
-
-const { GoogleGenAI } = require("@google/genai");
-
-// 環境変数からAPIキーを読み込む
-const API_KEY = process.env.GEMINI_API_KEY;
-
-// APIキーがない場合は処理を停止する
-if (!API_KEY) {
-    console.error("Error: GEMINI_API_KEY environment variable is not set.");
-    // 適切なエラーコードでプロセスを終了
-    process.exit(1); 
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY }); 
 
 
 
