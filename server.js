@@ -10,12 +10,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
+const session = require("express-session");
 
 /* ===============================
  * App / Server
  * =============================== */
 const app = express();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 10001;
 
 /* ===============================
  * Directories (Render-safe)
@@ -36,6 +37,92 @@ const UPLOAD_DIR = path.join(PUBLIC_DIR, 'uploads');
  * =============================== */
 const drawingFile = path.join(DATA_DIR, 'drawing.json');
 const messagesFile = path.join(DATA_DIR, 'messages.json');
+
+//Discord
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+const DISCORD_REDIRECT_URI = "http://cube.ssnetwork.io:54290/auth/discord/callback";
+
+
+app.get("/__whoami", (req, res) => {
+  res.send("THIS SERVER IS DISCORD-AUTH SERVER");
+});
+
+app.get("/auth/discord", (req, res) => {
+  const url = new URL("https://discord.com/oauth2/authorize");
+
+  url.searchParams.set("client_id", DISCORD_CLIENT_ID);
+  url.searchParams.set("redirect_uri", DISCORD_REDIRECT_URI);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("scope", "identify email");
+
+  res.redirect(url.toString());
+});
+
+app.get("/auth/discord/callback", async (req, res) => {
+  const code = req.query.code;
+  if (!code) return res.status(400).send("No code");
+
+  try {
+    const params = new URLSearchParams({
+      client_id: DISCORD_CLIENT_ID,
+      client_secret: DISCORD_CLIENT_SECRET,
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: DISCORD_REDIRECT_URI
+    });
+
+    const tokenRes = await axios.post(
+      "https://discord.com/api/oauth2/token",
+      params,
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
+
+    const token = tokenRes.data;
+
+    const userRes = await axios.get(
+      "https://discord.com/api/users/@me",
+      { headers: { Authorization: `Bearer ${token.access_token}` } }
+    );
+
+    const user = userRes.data;
+
+    res.send(`
+      <h1>ログイン成功</h1>
+      <pre>${JSON.stringify(user, null, 2)}</pre>
+      <a href="/">戻る</a>
+    `);
+
+  } catch (e) {
+    console.error(e.response?.data || e);
+    res.status(500).send("Discord login failed");
+  }
+});
+
+app.use(session({
+  secret: "super-secret-key",
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.get("/auth/discord/callback", async (req, res) => {
+  const user = userRes.data;
+
+  req.session.user = {
+    id: user.id,
+    username: user.username,
+    avatar: user.avatar
+  };
+
+  res.redirect("/");
+});
+
+app.post("/api/logout", (req, res) => {
+  req.session.destroy(() => res.json({ ok: true }));
+});
+
+
+
 
 /* ===============================
  * In-memory state
@@ -251,4 +338,3 @@ io.on('connection', socket => {
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
-
